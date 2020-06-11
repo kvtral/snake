@@ -6,19 +6,19 @@ def loadImage (name):
 
 pygame.init() 
 
-icono = pygame.image.load('icon.jpg')
+icono = pygame.image.load('icon.jpg') # No me carga el icono en la barra de la ventana :(
 pygame.display.set_icon(icono)
 
 # Configuracion del juego
 
-pygame.display.set_caption("Serpiente")
+pygame.display.set_caption("S.N.A.K.E. 0.1")
 ancho = 800
 alto = 600
 display =  pygame.display.set_mode((ancho, alto))
 bgDisplay = loadImage('fondo.jpg')
 display.blit(bgDisplay, [0,0])
 
-speed = pygame.time.Clock()
+clock = pygame.time.Clock()
 snakeSize = 20
 fuente = pygame.font.SysFont('ka1.ttf', 35)
 
@@ -42,7 +42,7 @@ def pausa ():
         bgGame = loadImage('pausa.jpg')
         display.blit (bgGame, [0,0])
         pygame.display.update()
-        speed.tick(15)
+        clock.tick(15)
 
 def introGame():
     intro = True
@@ -60,7 +60,7 @@ def introGame():
         bgGame = loadImage('intro.jpg')
         display.blit (bgGame, [0,0])
         pygame.display.update()
-        speed.tick(5)
+        clock.tick(5)
         
 def fin(gameOver):
     while (gameOver):
@@ -98,7 +98,7 @@ def screenMsg (msg, color, showY=0):
 
 def Juego():
     
-    level = 1
+    speed = 1
     fps = 10
     
     gameExit = False
@@ -115,10 +115,23 @@ def Juego():
     # Serpiente
     snakeLista = []
     snakeLen = 1
+    scored = 0
 
-    #Variable Manzana
-    ManzaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
-    ManzaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
+    #Variable M. Roja
+    rojaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
+    rojaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
+    
+    #Inicial M.Verde
+    verdeX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
+    verdeY = round(random.randrange(70,alto-70)/20.0) * snakeSize    
+    
+    #Inicial M.Morada
+    
+    moradaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
+    moradaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
+   
+   # Tengo la idea de generar un numero aleatorio para la aparicion de Manzanas Verdes y Moradas 
+   # extra = int(round(random.randrange(0,100)))
     
     #Sonidos
     pulsarSound = pygame.mixer.Sound('song.ogg')
@@ -176,7 +189,13 @@ def Juego():
         moverY +=  cambioY
         display.blit(bgDisplay, [0,0])
         
-        pygame.draw.rect(display, (255,0,0), [ManzaX,ManzaY,snakeSize,snakeSize])
+        pygame.draw.rect(display, (255,0,0), [rojaX,rojaY,snakeSize,snakeSize])
+         
+        
+        #if extra % 5 == 0:
+        pygame.draw.rect(display, (0,255,0), [verdeX,verdeY,snakeSize,snakeSize])
+        #elif extra % 3 == 0 and moradaEat == 1:
+        pygame.draw.rect(display, (200,0,255), [moradaX,moradaY,snakeSize,snakeSize])
         
         snakeHead = []
         snakeHead.append(moverX)
@@ -186,31 +205,50 @@ def Juego():
         if len(snakeLista) > snakeLen:
             del snakeLista[0]
 
-        #Evaluar si la cabeza de la serpiente "choca" con alguna parte del cuerpo
+        #Evalua si la cabeza de la serpiente "choca" con alguna parte del cuerpo
+        ########################################################################
+        #                     CAMBIO IMPORTANTE PENDIENTE!                     #
+        #      Evitar que "choque" cuando se presiona "hacia atras"            #
+        ########################################################################
         for eachSegment in snakeLista[:-1]:
             if eachSegment == snakeHead:
                 pulsarSound.stop()
                 fin (True)
 
-
         snake (snakeSize,snakeLista)
-        puntos (snakeLen-1)
-        txt = fuente.render( str (level), True, (255,255,255))
+        puntos (scored)
+        txt = fuente.render( str (speed), True, (255,255,255))
         display.blit (txt, [700, 15])   
         pygame.display.update()
 
-        if moverX == ManzaX and moverY == ManzaY:
+        if moverX == rojaX and moverY == rojaY:
             pygame.mixer_music.load("eat.ogg")
             pygame.mixer_music.play(0)
-            ManzaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
-            ManzaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
+            rojaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
+            rojaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
             snakeLen += 1
-            
-            if len(snakeLista) % 4 == 0:
-                level += 1
-                fps += 2
+            scored += 1         
+            if len(snakeLista) % 3 == 0:
+                speed += 1
+                fps += 1
 
-        speed.tick(fps)
+        if moverX == verdeX and moverY == verdeY:
+            pygame.mixer_music.load("eat.ogg")
+            pygame.mixer_music.play(0)
+            verdeX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
+            verdeY = round(random.randrange(70,alto-70)/20.0) * snakeSize
+            speed += 1           
+            
+                
+        if moverX == moradaX and moverY == moradaY:
+            pygame.mixer_music.load("eat.ogg")
+            pygame.mixer_music.play(0)
+            moradaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
+            moradaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
+            snakeLen += 10
+
+
+        clock.tick(fps)
 
 Juego()
 
