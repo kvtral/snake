@@ -29,7 +29,7 @@ pygame.display.set_icon(icono)
 
 # Configuracion del juego
 
-pygame.display.set_caption("S.N.A.K.E.  v0.2")
+pygame.display.set_caption("S.N.A.K.E.  v0.4")
 ancho = 800
 alto = 600
 display =  pygame.display.set_mode((ancho, alto))
@@ -94,6 +94,10 @@ def introGame():
     pulsarSound.stop()
         
 def fin(gameOver):
+    pulsarSound = pygame.mixer.Sound('gameOver.ogg')
+    pulsarSound.set_volume(0.50)
+    pulsarSound.play(0)
+    pulsarSound.stop
     
     while (gameOver):
 
@@ -263,7 +267,7 @@ def Juego(intro=True):
             rojaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
             snakeLen += 1
             scored += 1         
-            if len(snakeLista) % 3 == 0:
+            if scored % 3 == 0:
                 speed += 1
                 fps += 1
 
@@ -280,6 +284,7 @@ def Juego(intro=True):
             pygame.mixer_music.play(0)
             moradaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
             moradaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
+            scored += 3
             snakeLen += 10
 
 
