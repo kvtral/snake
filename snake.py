@@ -1,5 +1,5 @@
 #####################################################
-#        Snake en Python 0.2 - testing Pygame       #
+#        Snake en Python 0.4 - testing Pygame       #
 #               Taller Python                       # 
 #                                                   #
 #   Code:   Alvaro Carrillanca P. (A.K.A. kvtral)   #
@@ -38,11 +38,11 @@ display.blit(bgDisplay, [0,0])
 
 clock = pygame.time.Clock()
 snakeSize = 20
-fuente = pygame.font.SysFont('ka1.ttf', 35)
+fuente = pygame.font.SysFont('ka1.ttf', 50)
 
 def puntos (score):
     txt = fuente.render(str(score), True, (255,255,255))
-    display.blit (txt, [280, 15])      
+    display.blit (txt, [280, 8])      
 
 def pausa ():
     pausado = True
@@ -93,7 +93,7 @@ def introGame():
         clock.tick(5)
     pulsarSound.stop()
         
-def fin(gameOver):
+def fin(gameOver, scored):
     pulsarSound = pygame.mixer.Sound('gameOver.ogg')
     pulsarSound.set_volume(0.50)
     pulsarSound.play(0)
@@ -117,6 +117,7 @@ def fin(gameOver):
                     quit ()
         bgGame = loadImage('gameover.jpg')
         display.blit (bgGame, [0,0])
+        screenMsg(str (scored), (255,255,255), -30)
         pygame.display.update()       
 
 def snake (snakeSize,snakeLista):
@@ -219,10 +220,13 @@ def Juego(intro=True):
                     pulsarSound.set_volume(0.0)
                     pausa()
                     pulsarSound.set_volume(0.20)
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit
+                    quit ()
                     
         if moverX >= ancho-60 or moverX < 60 or moverY >= alto-60 or moverY < 60:
             pulsarSound.stop()
-            fin(True)
+            fin(True, scored)
 
         moverX +=  cambioX
         moverY +=  cambioY
@@ -230,7 +234,7 @@ def Juego(intro=True):
         
         pygame.draw.rect(display, (255,0,0), [rojaX,rojaY,snakeSize,snakeSize])
          
-        
+# Se queria intentar que aparecieran las otras manzanas cada X ciclos        
         #if extra % 5 == 0:
         pygame.draw.rect(display, (0,255,0), [verdeX,verdeY,snakeSize,snakeSize])
         #elif extra % 3 == 0 and moradaEat == 1:
@@ -252,12 +256,12 @@ def Juego(intro=True):
         for eachSegment in snakeLista[:-1]:
             if eachSegment == snakeHead:
                 pulsarSound.stop()
-                fin (True)
+                fin (True, scored)
 
         snake (snakeSize,snakeLista)
         puntos (scored)
         txt = fuente.render( str (speed), True, (255,255,255))
-        display.blit (txt, [700, 15])   
+        display.blit (txt, [680, 8])   
         pygame.display.update()
 
         if moverX == rojaX and moverY == rojaY:
