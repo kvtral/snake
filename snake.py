@@ -1,17 +1,35 @@
+#####################################################
+#        Snake en Python 0.2 - testing Pygame       #
+#               Taller Python                       # 
+#                                                   #
+#   Code:   Alvaro Carrillanca P. (A.K.A. kvtral)   #
+#           alvaro.carrillanca(at)gmail(dot)com     #
+#           https://github.com/kvtral/snake         #
+#   Sounds: kvtral (made in Beep Box)               #                                
+#           https://beepbox.co                      #    
+#                                                   #
+#   Music:  Patrick de Arteaga.                     #
+#   https://patrickdearteaga.com/es/musica-arcade/  #
+#   Licenced by creative commons                    #
+#                                                   #
+#####################################################
+
 import pygame, random, time, os
 
 def loadImage (name):
     path = os.path.join('',name)
     return pygame.image.load(path).convert()
 
-pygame.init() 
+pygame.init()
 
-icono = pygame.image.load('icon.jpg') # No me carga el icono en la barra de la ventana :(
+intro = True
+
+icono = pygame.image.load('icon.jpg') # No me carga el icono en la barra de la ventana
 pygame.display.set_icon(icono)
 
 # Configuracion del juego
 
-pygame.display.set_caption("S.N.A.K.E. 0.1")
+pygame.display.set_caption("S.N.A.K.E.  v0.2")
 ancho = 800
 alto = 600
 display =  pygame.display.set_mode((ancho, alto))
@@ -28,14 +46,22 @@ def puntos (score):
 
 def pausa ():
     pausado = True
+    pulsarSound = pygame.mixer.Sound('pause.ogg')
+    pulsarSound.set_volume(0.50)
+    pulsarSound.play(0)
+    pulsarSound.stop
     while (pausado):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit
                 quit ()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_c:
+                if event.key == pygame.K_r:
                     pausado = False
+                    pulsarSound.play(0)
+                    pulsarSound.stop
+                elif event.key == pygame.K_m:
+                    Juego()
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit
                     quit ()
@@ -44,15 +70,19 @@ def pausa ():
         pygame.display.update()
         clock.tick(15)
 
+
 def introGame():
     intro = True
+    pulsarSound = pygame.mixer.Sound('intro.ogg')
+    pulsarSound.set_volume(0.20)
+    pulsarSound.play(10)
     while (intro):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit
                 quit ()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_c:
+                if event.key == pygame.K_n:
                     intro = False
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit
@@ -61,8 +91,10 @@ def introGame():
         display.blit (bgGame, [0,0])
         pygame.display.update()
         clock.tick(5)
+    pulsarSound.stop()
         
 def fin(gameOver):
+    
     while (gameOver):
 
         for event in pygame.event.get():
@@ -70,10 +102,12 @@ def fin(gameOver):
                 pygame.quit
                 quit ()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_c:
-                    intro = False
+                if event.key == pygame.K_m:
                     gameOver = False
                     Juego()
+                elif event.key == pygame.K_n:
+                    gameOver = False
+                    Juego (False)
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit
                     quit ()
@@ -96,7 +130,7 @@ def screenMsg (msg, color, showY=0):
     
     #txtToScreen = fuente.render(msg, True, color)
 
-def Juego():
+def Juego(intro=True):
     
     speed = 1
     fps = 10
@@ -132,13 +166,14 @@ def Juego():
    
    # Tengo la idea de generar un numero aleatorio para la aparicion de Manzanas Verdes y Moradas 
    # extra = int(round(random.randrange(0,100)))
-    
+    if (intro):
+        introGame()
+
     #Sonidos
-    pulsarSound = pygame.mixer.Sound('song.ogg')
+    pulsarSound = pygame.mixer.Sound('juego.ogg')
     pulsarSound.set_volume(0.20)
     pulsarSound.play(20)
     
-    introGame()
     
     while not gameExit:
         
@@ -222,7 +257,7 @@ def Juego():
         pygame.display.update()
 
         if moverX == rojaX and moverY == rojaY:
-            pygame.mixer_music.load("eat.ogg")
+            pygame.mixer_music.load("RojaEat.ogg")
             pygame.mixer_music.play(0)
             rojaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
             rojaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
@@ -233,7 +268,7 @@ def Juego():
                 fps += 1
 
         if moverX == verdeX and moverY == verdeY:
-            pygame.mixer_music.load("eat.ogg")
+            pygame.mixer_music.load("VerdeEat.ogg")
             pygame.mixer_music.play(0)
             verdeX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
             verdeY = round(random.randrange(70,alto-70)/20.0) * snakeSize
@@ -241,7 +276,7 @@ def Juego():
             
                 
         if moverX == moradaX and moverY == moradaY:
-            pygame.mixer_music.load("eat.ogg")
+            pygame.mixer_music.load("MoradaEat.ogg")
             pygame.mixer_music.play(0)
             moradaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
             moradaY = round(random.randrange(70,alto-70)/20.0) * snakeSize
