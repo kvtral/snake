@@ -16,10 +16,25 @@
 
 import pygame, random, time, os
 
+def readScore():
+    try:
+        archivo = open('score.txt','r')
+        hs = int(archivo.readline())
+        archivo.close()
+        return hs
+    except:
+        archivo = open ('score.txt','w')
+        archivo.write("0")
+        archivo.close()
+
+def saveScore(hscore):
+    archivo = open('score.txt','w')
+    archivo.write(hscore)
+    archivo.close()
+
 def loadImage (name):
     path = os.path.join('',name)
     return pygame.image.load(path).convert()
-
 pygame.init()
 
 intro = True
@@ -29,7 +44,7 @@ pygame.display.set_icon(icono)
 
 # Configuracion del juego
 
-pygame.display.set_caption("S.N.A.K.E.  v0.4")
+pygame.display.set_caption("S.N.A.K.E.  v0.6")
 ancho = 800
 alto = 600
 display =  pygame.display.set_mode((ancho, alto))
@@ -43,6 +58,10 @@ fuente = pygame.font.SysFont('ka1.ttf', 50)
 def puntos (score):
     txt = fuente.render(str(score), True, (255,255,255))
     display.blit (txt, [280, 8])      
+
+def puntoAlto (hs):
+    txt = fuente.render(str(hs), True, (255,255,255))
+    display.blit (txt, [280, 550])
 
 def pausa ():
     pausado = True
@@ -155,6 +174,7 @@ def Juego(intro=True):
     snakeLista = []
     snakeLen = 1
     scored = 0
+    hScore = readScore()
 
     #Variable M. Roja
     rojaX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
@@ -181,25 +201,7 @@ def Juego(intro=True):
     
     
     while not gameExit:
-        
-        """ while (gameOver):
-            
-         #   display.blit(bgDisplay,[0,0])
-            pulsarSound.stop()
-            screenMsg("Game Over!", (255,0,0), -50)
-            screenMsg("Para salir presione 'Q'",(0,0,0), 50)
-            pygame.display.update()
-            
-            for event in pygame.event.get():
                 
-                if event.type == pygame.KEYDOWN:
-                    if event.type == pygame.K_ESCAPE:
-                        gameExit = True
-                        gameOver = False
-                    if event.type == pygame.K_c:
-                        gameOver = False
-                        Juego()
-         """        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameExit = True
@@ -260,8 +262,10 @@ def Juego(intro=True):
 
         snake (snakeSize,snakeLista)
         puntos (scored)
+        maximoPuntaje = fuente.render (str(hScore), True,(255,255,255))
         txt = fuente.render( str (speed), True, (255,255,255))
         display.blit (txt, [680, 8])   
+        display.blit (maximoPuntaje, [475,552])
         pygame.display.update()
 
         if moverX == rojaX and moverY == rojaY:
@@ -281,8 +285,7 @@ def Juego(intro=True):
             verdeX = round(random.randrange(70,ancho-70)/20.0) * snakeSize
             verdeY = round(random.randrange(70,alto-70)/20.0) * snakeSize
             speed += 1           
-            
-                
+                            
         if moverX == moradaX and moverY == moradaY:
             pygame.mixer_music.load("MoradaEat.ogg")
             pygame.mixer_music.play(0)
@@ -291,7 +294,10 @@ def Juego(intro=True):
             scored += 3
             snakeLen += 10
 
-
+        if scored > hScore:
+            hScore = scored
+            saveScore(str(hScore))
+        
         clock.tick(fps)
 
 Juego()
